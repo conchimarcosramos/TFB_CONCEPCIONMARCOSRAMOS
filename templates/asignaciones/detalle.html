@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}{{ asignacion.codigo_grupo }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="display-6">
+            <i class="fas fa-calendar-alt"></i> {{ asignacion.codigo_grupo }}
+        </h1>
+        <p class="lead">{{ asignacion.curso.nombre_curso }}</p>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard.mostrar') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('asignaciones.listar') }}">Asignaciones</a></li>
+                <li class="breadcrumb-item active">{{ asignacion.codigo_grupo }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('asignaciones.editar', id=asignacion.id_asignacion) }}" class="btn btn-warning">
+            <i class="fas fa-edit"></i> Editar
+        </a>
+        <a href="{{ url_for('estudiantes.listar', id_asignacion=asignacion.id_asignacion) }}" class="btn btn-info">
+            <i class="fas fa-users"></i> Estudiantes
+        </a>
+    </div>
+</div>
+
+<!-- Tarjetas de resumen -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h6 class="card-title">Total Estudiantes</h6>
+                <h2 class="mb-0">{{ total_estudiantes }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h6 class="card-title">Activos</h6>
+                <h2 class="mb-0">{{ estudiantes_activos }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h6 class="card-title">Finalizados</h6>
+                <h2 class="mb-0">{{ estudiantes_finalizados }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark">
+            <div class="card-body">
+                <h6 class="card-title">Horas Totales</h6>
+                <h2 class="mb-0">{{ asignacion.curso.horas_curso }}h</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Información de la asignación -->
+<div class="row mb-4">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-info-circle"></i> Información General</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-5">Código de Grupo:</dt>
+                    <dd class="col-sm-7"><strong>{{ asignacion.codigo_grupo }}</strong></dd>
+                    
+                    <dt class="col-sm-5">Código de Acción:</dt>
+                    <dd class="col-sm-7">{{ asignacion.codigo_accion or '-' }}</dd>
+                    
+                    <dt class="col-sm-5">Plan Formativo:</dt>
+                    <dd class="col-sm-7">{{ asignacion.plan_formativo or '-' }}</dd>
+                    
+                    <dt class="col-sm-5">Estado:</dt>
+                    <dd class="col-sm-7">
+                        <span class="badge bg-{{ 'success' if asignacion.estado_asignacion == 'activa' else 'secondary' }}">
+                            {{ asignacion.estado_asignacion }}
+                        </span>
+                    </dd>
+                    
+                    <dt class="col-sm-5">Curso:</dt>
+                    <dd class="col-sm-7">
+                        <span class="badge bg-info">{{ asignacion.curso.codigo_curso }}</span><br>
+                        {{ asignacion.curso.nombre_curso }}
+                    </dd>
+                    
+                    <dt class="col-sm-5">Empresa:</dt>
+                    <dd class="col-sm-7">{{ asignacion.empresa.nombre_comercial or asignacion.empresa.nombre_fiscal }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-clock"></i> Fechas y Horarios</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-5">Fecha de Inicio:</dt>
+                    <dd class="col-sm-7">
+                        <i class="fas fa-calendar-day"></i> {{ asignacion.fecha_inicio.strftime('%d/%m/%Y') }}
+                    </dd>
+                    
+                    <dt class="col-sm-5">Fecha de Fin:</dt>
+                    <dd class="col-sm-7">
+                        {% if asignacion.fecha_fin %}
+                        <i class="fas fa-calendar-check"></i> {{ asignacion.fecha_fin.strftime('%d/%m/%Y') }}
+                        {% else %}
+                        <span class="text-muted">En curso</span>
+                        {% endif %}
+                    </dd>
+                    
+                    <dt class="col-sm-5">Horario:</dt>
+                    <dd class="col-sm-7">
+                        {% if asignacion.hora_entrada and asignacion.hora_salida %}
+                        <i class="fas fa-clock"></i> {{ asignacion.hora_entrada.strftime('%H:%M') }} - {{ asignacion.hora_salida.strftime('%H:%M') }}
+                        {% else %}
+                        <span class="text-muted">No definido</span>
+                        {% endif %}
+                    </dd>
+                </dl>
+                
+                <hr>
+                
+                <h6><i class="fas fa-laptop"></i> Acceso a Plataforma</h6>
+                <dl class="row">
+                    {% if asignacion.ur

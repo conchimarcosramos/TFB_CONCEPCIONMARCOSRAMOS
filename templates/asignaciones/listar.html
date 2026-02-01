@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Asignaciones{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="display-6">
+            <i class="fas fa-calendar-alt"></i> Mis Asignaciones
+        </h1>
+        <p class="text-muted">Gestiona tus cursos asignados</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('asignaciones.nueva') }}" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus"></i> Nueva Asignación
+        </a>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="btn-group" role="group">
+            <a href="{{ url_for('asignaciones.listar', estado='todas') }}" 
+               class="btn btn-outline-primary {{ 'active' if estado_filtro == 'todas' }}">
+                <i class="fas fa-list"></i> Todas
+            </a>
+            <a href="{{ url_for('asignaciones.listar', estado='activa') }}" 
+               class="btn btn-outline-success {{ 'active' if estado_filtro == 'activa' }}">
+                <i class="fas fa-check-circle"></i> Activas
+            </a>
+            <a href="{{ url_for('asignaciones.listar', estado='finalizada') }}" 
+               class="btn btn-outline-secondary {{ 'active' if estado_filtro == 'finalizada' }}">
+                <i class="fas fa-flag-checkered"></i> Finalizadas
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                {% if asignaciones %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Grupo</th>
+                                <th>Curso</th>
+                                <th>Empresa</th>
+                                <th>Fechas</th>
+                                <th>Horario</th>
+                                <th>Estado</th>
+                                <th>Alumnos</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for asig in asignaciones %}
+                            <tr>
+                                <td>
+                                    <strong>{{ asig.codigo_grupo }}</strong>
+                                    {% if asig.codigo_accion %}
+                                    <br><small class="text-muted">{{ asig.codigo_accion }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ asig.curso.codigo_curso }}</span>
+                                    <br><small>{{ asig.curso.nombre_curso }}</small>
+                                </td>
+                                <td>{{ asig.empresa.nombre_comercial or asig.empresa.nombre_fiscal }}</td>
+                                <td>
+                                    <small>
+                                        <i class="fas fa-calendar-day"></i> {{ asig.fecha_inicio.strftime('%d/%m/%Y') }}<br>
+                                        <i class="fas fa-calendar-check"></i> {{ asig.fecha_fin.strftime('%d/%m/%Y') if asig.fecha_fin else 'En curso' }}
+                                    </small>
+                                </td>
+                                <td>
+                                    {% if asig.hora_entrada and asig.hora_salida %}
+                                    <small>{{ asig.hora_entrada.strftime('%H:%M') }} - {{ asig.hora_salida.strftime('%H:%M') }}</small>
+                                    {% else %}
+                                    <small class="text-muted">-</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if asig.estado_asignacion == 'activa' else 'secondary' }}">
+                                        {{ asig.estado_asignacion }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-dark">{{ asig.estudiantes|length }}</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('asignaciones.ver', id=asig.id_asignacion) }}" 
+                                           class="btn btn-sm btn-primary" title="Ver detalle">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ url_for('asignaciones.editar', id=asig.id_asignacion) }}" 
+                                           class="btn btn-sm btn-warning" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No hay asignaciones {{ 'activas' if estado_filtro == 'activa' else '' }}</h4>
+                    <p class="text-muted">Comienza creando tu primera asignación de curso</p>
+                    <a href="{{ url_for('asignaciones.nueva') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Crear Primera Asignación
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

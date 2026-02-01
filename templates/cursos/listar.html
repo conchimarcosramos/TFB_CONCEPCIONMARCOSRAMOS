@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Cursos{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="display-6">
+            <i class="fas fa-book"></i> Catálogo de Cursos
+        </h1>
+        <p class="text-muted">Gestiona las formaciones que impartes</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('cursos.nuevo') }}" class="btn btn-primary btn-lg">
+            <i class="fas fa-plus"></i> Nuevo Curso
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                {% if cursos %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Código</th>
+                                <th>Nombre del Curso</th>
+                                <th>Horas Totales</th>
+                                <th>Asignaciones</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for curso in cursos %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-primary">{{ curso.codigo_curso }}</span>
+                                </td>
+                                <td>
+                                    <strong>{{ curso.nombre_curso }}</strong>
+                                </td>
+                                <td>
+                                    <i class="fas fa-clock"></i> {{ curso.horas_curso }}h
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ curso.asignaciones|length }}</span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('cursos.editar', id=curso.id_curso) }}" 
+                                           class="btn btn-sm btn-warning" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-danger" 
+                                                onclick="confirmarEliminacion({{ curso.id_curso }}, '{{ curso.codigo_curso }}')"
+                                                title="Eliminar">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-book fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No hay cursos registrados</h4>
+                    <p class="text-muted">Comienza añadiendo tu primer curso</p>
+                    <a href="{{ url_for('cursos.nuevo') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Crear Primer Curso
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="formEliminar" method="POST" style="display:none;"></form>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmarEliminacion(id, codigo) {
+    if (confirm('¿Eliminar el curso "' + codigo + '"?\n\nSi tiene asignaciones asociadas no se podrá eliminar.')) {
+        var form = document.getElementById('formEliminar');
+        form.action = "{{ url_for('cursos.eliminar', id=0) }}".replace('0', id);
+        form.submit();
+    }
+}
+</script>
+{% endblock %}

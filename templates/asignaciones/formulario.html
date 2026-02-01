@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Editar' if asignacion else 'Nueva' }} Asignación{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-6">
+            <i class="fas fa-calendar-alt"></i> {{ 'Editar' if asignacion else 'Nueva' }} Asignación
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard.mostrar') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('asignaciones.listar') }}">Asignaciones</a></li>
+                <li class="breadcrumb-item active">{{ 'Editar' if asignacion else 'Nueva' }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    
+                    <!-- Datos principales -->
+                    <h5 class="mb-3"><i class="fas fa-info-circle"></i> Datos Principales</h5>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="id_empresa" class="form-label">Empresa *</label>
+                            <select class="form-select" id="id_empresa" name="id_empresa" required>
+                                <option value="">Selecciona una empresa...</option>
+                                {% for empresa in empresas %}
+                                <option value="{{ empresa.id_empresa }}" 
+                                        {{ 'selected' if asignacion and asignacion.id_empresa == empresa.id_empresa }}>
+                                    {{ empresa.nombre_comercial or empresa.nombre_fiscal }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="id_curso" class="form-label">Curso *</label>
+                            <select class="form-select" id="id_curso" name="id_curso" required>
+                                <option value="">Selecciona un curso...</option>
+                                {% for curso in cursos %}
+                                <option value="{{ curso.id_curso }}" 
+                                        {{ 'selected' if asignacion and asignacion.id_curso == curso.id_curso }}>
+                                    {{ curso.codigo_curso }} - {{ curso.nombre_curso }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="codigo_grupo" class="form-label">Código de Grupo *</label>
+                            <input type="text" class="form-control" id="codigo_grupo" name="codigo_grupo" 
+                                   value="{{ asignacion.codigo_grupo if asignacion }}" required
+                                   placeholder="Ej: GRUPO-A-2026">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="codigo_accion" class="form-label">Código de Acción</label>
+                            <input type="text" class="form-control" id="codigo_accion" name="codigo_accion" 
+                                   value="{{ asignacion.codigo_accion if asignacion }}"
+                                   placeholder="Ej: ACC-2026-001">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="plan_formativo" class="form-label">Plan Formativo</label>
+                            <input type="text" class="form-control" id="plan_formativo" name="plan_formativo" 
+                                   value="{{ asignacion.plan_formativo if asignacion }}"
+                                   placeholder="Ej: Plan 2026">
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Fechas y horarios -->
+                    <h5 class="mb-3"><i class="fas fa-clock"></i> Fechas y Horarios</h5>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <label for="fecha_inicio" class="form-label">Fecha de Inicio *</label>
+                            <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" 
+                                   value="{{ asignacion.fecha_inicio.strftime('%Y-%m-%d') if asignacion and asignacion.fecha_inicio }}" 
+                                   required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="fecha_fin" class="form-label">Fecha de Fin</label>
+                            <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" 
+                                   value="{{ asignacion.fecha_fin.strftime('%Y-%m-%d') if asignacion and asignacion.fecha_fin }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="hora_entrada" class="form-label">Hora de Entrada</label>
+                            <input type="time" class="form-control" id="hora_entrada" name="hora_entrada" 
+                                   value="{{ asignacion.hora_entrada.strftime('%H:%M') if asignacion and asignacion.hora_entrada }}">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="hora_salida" class="form-label">Hora de Salida</label>
+                            <input type="time" class="form-control" id="hora_salida" name="hora_salida" 
+                                   value="{{ asignacion.hora_salida.strftime('%H:%M') if asignacion and asignacion.hora_salida }}">
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Plataforma -->
+                    <h5 class="mb-3"><i class="fas fa-laptop"></i> Acceso a Plataforma</h5>
+                    
+                    <div class="mb-3">
+                        <label for="url_plataforma" class="form-label">URL de la Plataforma</label>
+                        <input type="url" class="form-control" id="url_plataforma" name="url_plataforma" 
+                               value="{{ asignacion.url_plataforma if asignacion }}"
+                               placeholder="https://moodle.ejemplo.com">
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="usuario_plataforma" class="form-label">Usuario</label>
+                            <input type="text" class="form-control" id="usuario_plataforma" name="usuario_plataforma" 
+                                   value="{{ asignacion.usuario_plataforma if asignacion }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="clave_plataforma" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="clave_plataforma" name="clave_plataforma" 
+                                   value="{{ asignacion.clave_plataforma if asignacion }}"
+                                   placeholder="Dejar en blanco para no cambiar">
+                            <small class="text-muted">Por seguridad, no se muestra la contraseña guardada</small>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Estado -->
+                    <div class="mb-3">
+                        <label for="estado_asignacion" class="form-label">Estado</label>
+                        <select class="form-select" id="estado_asignacion" name="estado_asignacion">
+                            <option value="activa" {{ 'selected' if not asignacion or asignacion.estado_asignacion == 'activa' }}>Activa</option>
+                            <option value="finalizada" {{ 'selected' if asignacion and asignacion.estado_asignacion == 'finalizada' }}>Finalizada</option>
+                            <option value="suspendida" {{ 'selected' if asignacion and asignacion.estado_asignacion == 'suspendida' }}>Suspendida</option>
+                        </select>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('asignaciones.listar') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> {{ 'Actualizar' if asignacion else 'Crear' }} Asignación
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

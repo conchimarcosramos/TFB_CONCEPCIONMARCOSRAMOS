@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Editar' if estudiante else 'Nuevo' }} Estudiante{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-6">
+            <i class="fas fa-user"></i> {{ 'Editar' if estudiante else 'Nuevo' }} Estudiante
+        </h1>
+        <p class="text-muted">{{ asignacion.codigo_grupo }} - {{ asignacion.curso.nombre_curso }}</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="nombre_alumno" class="form-label">Nombre Completo *</label>
+                        <input type="text" class="form-control" id="nombre_alumno" name="nombre_alumno" 
+                               value="{{ estudiante.nombre_alumno if estudiante }}" required
+                               placeholder="Ej: Juan Pérez García">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="correo_electronico" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="correo_electronico" name="correo_electronico" 
+                               value="{{ estudiante.correo_electronico if estudiante }}"
+                               placeholder="estudiante@ejemplo.com">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="matricula" class="form-label">Número de Matrícula</label>
+                        <input type="text" class="form-control" id="matricula" name="matricula" 
+                               value="{{ estudiante.matricula if estudiante }}"
+                               placeholder="MAT0001">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="estado_alumno" class="form-label">Estado</label>
+                        <select class="form-select" id="estado_alumno" name="estado_alumno">
+                            <option value="activo" {{ 'selected' if not estudiante or estudiante.estado_alumno == 'activo' }}>Activo</option>
+                            <option value="finalizado" {{ 'selected' if estudiante and estudiante.estado_alumno == 'finalizado' }}>Finalizado</option>
+                            <option value="baja" {{ 'selected' if estudiante and estudiante.estado_alumno == 'baja' }}>Baja</option>
+                        </select>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('estudiantes.listar', id_asignacion=asignacion.id_asignacion) }}" 
+                           class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> {{ 'Actualizar' if estudiante else 'Añadir' }} Estudiante
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-info-circle"></i> Información</h5>
+                <p class="card-text small">
+                    El estudiante quedará vinculado a la asignación:<br>
+                    <strong>{{ asignacion.codigo_grupo }}</strong>
+                </p>
+                <p class="card-text small">
+                    El email es opcional pero recomendable para futuras comunicaciones.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

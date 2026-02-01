@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Docker
+postgres_data/
+
+# Archivos temporales
+*.zip
+*.log
+uploads/
+
+# Sistema
+.DS_Store
+Thumbs.db

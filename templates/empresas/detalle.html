@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}{{ empresa.nombre_comercial or empresa.nombre_fiscal }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="display-6">
+            <i class="fas fa-building"></i> {{ empresa.nombre_comercial or empresa.nombre_fiscal }}
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard.mostrar') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('empresas.listar') }}">Empresas</a></li>
+                <li class="breadcrumb-item active">{{ empresa.nombre_comercial or empresa.nombre_fiscal }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('empresas.editar', id=empresa.id_empresa) }}" class="btn btn-warning">
+            <i class="fas fa-edit"></i> Editar
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-info-circle"></i> Información General</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Nombre Fiscal:</dt>
+                    <dd class="col-sm-8">{{ empresa.nombre_fiscal }}</dd>
+                    
+                    {% if empresa.nombre_comercial %}
+                    <dt class="col-sm-4">Nombre Comercial:</dt>
+                    <dd class="col-sm-8">{{ empresa.nombre_comercial }}</dd>
+                    {% endif %}
+                    
+                    {% if empresa.nif_cif %}
+                    <dt class="col-sm-4">NIF/CIF:</dt>
+                    <dd class="col-sm-8">{{ empresa.nif_cif }}</dd>
+                    {% endif %}
+                    
+                    {% if empresa.direccion %}
+                    <dt class="col-sm-4">Dirección:</dt>
+                    <dd class="col-sm-8">{{ empresa.direccion }}</dd>
+                    {% endif %}
+                    
+                    {% if empresa.plataformas %}
+                    <dt class="col-sm-4">Plataformas:</dt>
+                    <dd class="col-sm-8">
+                        {% for plat in empresa.plataformas.split(',') %}
+                        <span class="badge bg-info">{{ plat.strip() }}</span>
+                        {% endfor %}
+                    </dd>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-euro-sign"></i> Condiciones Económicas</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    {% if empresa.tarifa_hora %}
+                    <dt class="col-sm-4">Tarifa/Hora:</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-success fs-6">{{ "%.2f"|format(empresa.tarifa_hora) }}€/h</span>
+                    </dd>
+                    {% endif %}
+                    
+                    {% if empresa.forma_pago %}
+                    <dt class="col-sm-4">Forma de Pago:</dt>
+                    <dd class="col-sm-8">{{ empresa.forma_pago }}</dd>
+                    {% endif %}
+                    
+                    {% if empresa.plazo_pago %}
+                    <dt class="col-sm-4">Plazo de Pago:</dt>
+                    <dd class="col-sm-8">{{ empresa.plazo_pago }} días</dd>
+                    {% endif %}
+                </dl>
+                
+                {% if empresa.persona_contacto or empresa.correo_electronico or empresa.telefono %}
+                <hr>
+                <h6><i class="fas fa-user"></i> Contacto</h6>
+                <dl class="row">
+                    {% if empresa.persona_contacto %}
+                    <dt class="col-sm-4">Persona:</dt>
+                    <dd class="col-sm-8">{{ empresa.persona_contacto }}</dd>
+                    {% endif %}
+                    
+                    {% if empresa.correo_electronico %}
+                    <dt class="col-sm-4">Email:</dt>
+                    <dd class="col-sm-8">
+                        <a href="mailto:{{ empresa.correo_electronico }}">{{ empresa.correo_electronico }}</a>
+                    </dd>
+                    {% endif %}
+                    
+                    {% if empresa.telefono %}
+                    <dt class="col-sm-4">Teléfono:</dt>
+                    <dd class="col-sm-8">{{ empresa.telefono }}</dd>
+                    {% endif %}
+                </dl>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Asignaciones de esta empresa -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-calendar-alt"></i> Asignaciones con esta Empresa</h5>
+            </div>
+            <div class="card-body">
+                {% if empresa.asignaciones %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Código Grupo</th>
+                                <th>Curso</th>
+                                <th>Fechas</th>
+                                <th>Estado</th>
+                                <th>Estudiantes</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for asig in empresa.asignaciones %}
+                            <tr>
+                                <td><strong>{{ asig.codigo_grupo }}</strong></td>
+                                <td>{{ asig.curso.nombre_curso }}</td>
+                                <td><small>{{ asig.fecha_inicio.strftime('%d/%m/%Y') }} - {{ asig.fecha_fin.strftime('%d/%m/%Y') if asig.fecha_fin else 'En curso' }}</small></td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if asig.estado_asignacion == 'activa' else 'secondary' }}">
+                                        {{ asig.estado_asignacion }}
+                                    </span>
+                                </td>
+                                <td>{{ asig.estudiantes|length }}</td>
+                                <td>
+                                    <a href="{{ url_for('asignaciones.ver', id=asig.id_asignacion) }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-3">No hay asignaciones registradas con esta empresa</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if empresa.notas %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-sticky-note"></i> Notas</h5>
+            </div>
+            <div class="card-body">
+                <p>{{ empresa.notas }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

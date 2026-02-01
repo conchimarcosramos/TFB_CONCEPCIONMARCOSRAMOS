@@ -1,0 +1,42 @@
+#version: '3.8' no es necesario en versiones recientes de Docker Compose
+
+services:
+  db:
+    image: postgres:16
+    container_name: gesttation_db
+    environment:
+      POSTGRES_DB: gesttation
+      POSTGRES_USER: gesttation
+      POSTGRES_PASSWORD: gesttation2026
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - gesttation_network
+
+  backend:
+    build: .
+    container_name: gesttation_backend
+    environment:
+      DATABASE_URL: postgresql://gesttation:gesttation2026@db:5432/gesttation
+      FLASK_APP: run.py
+      FLASK_ENV: development
+      SECRET_KEY: dev-secret-key-change-in-production
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    networks:
+      - gesttation_network
+    command: python run.py
+
+volumes:
+  postgres_data:
+
+networks:
+  gesttation_network:
+    driver: bridge

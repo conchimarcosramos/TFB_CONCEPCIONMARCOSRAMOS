@@ -1,0 +1,230 @@
+/* 
+ * Estilos de GESTTATION
+ * Tardé bastante en elegir los colores, al final me decidí por esta paleta
+ * que encontré en coolors.co y la adapté un poco
+ */
+
+/* Variables - esto lo aprendí en un tutorial de CSS moderno */
+:root {
+    --verde-principal: #0E4D57;
+    --morado: #863D83;
+    --naranja: #F47C58;
+    --amarillo: #DADA52;
+    --gris-fondo: #E6E6E1;
+    --blanco: #FFFFFF;
+    --texto: #333333;
+}
+
+/* Estilos base */
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: var(--gris-fondo);
+    color: var(--texto);
+    min-height: 100vh;
+}
+
+/* Títulos */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    color: var(--verde-principal);
+}
+
+/* El navbar con el color principal */
+.navbar.navbar-dark.bg-primary {
+    background-color: var(--verde-principal) !important;
+    border-bottom: 3px solid var(--morado);
+}
+
+.navbar-brand {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.8rem;
+}
+
+.navbar-brand:hover {
+    color: var(--amarillo) !important;
+}
+
+/* Links del menú */
+.navbar-dark .navbar-nav .nav-link {
+    font-weight: 600;
+    margin: 0 5px;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+    color: var(--amarillo);
+}
+
+.navbar-dark .navbar-nav .nav-link.active {
+    color: var(--naranja);
+    border-bottom: 2px solid var(--naranja);
+}
+
+/* Tarjetas - le puse sombra suave que queda mejor */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    background-color: var(--blanco);
+}
+
+.card:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    /* El transform lo quité porque daba problemas en móvil */
+}
+
+.card-header {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    border-bottom: 2px solid var(--morado);
+}
+
+/* Colores personalizados para las cards del dashboard */
+.card.bg-primary {
+    background-color: var(--verde-principal) !important;
+}
+
+.card.bg-success {
+    background-color: var(--morado) !important;
+}
+
+.card.bg-info {
+    background-color: var(--naranja) !important;
+}
+
+.card.bg-warning {
+    background-color: var(--amarillo) !important;
+    color: var(--texto) !important;
+}
+
+/* Botones */
+.btn {
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+.btn-primary {
+    background-color: var(--verde-principal);
+    border-color: var(--verde-principal);
+}
+
+.btn-primary:hover {
+    background-color: #0a3a42;
+    border-color: #0a3a42;
+}
+
+.btn-success {
+    background-color: var(--morado);
+    border-color: var(--morado);
+}
+
+.btn-warning {
+    background-color: var(--naranja);
+    border-color: var(--naranja);
+    color: white;
+}
+
+/* Tablas */
+.table {
+    background-color: var(--blanco);
+}
+
+.table thead {
+    background-color: var(--verde-principal);
+    color: var(--blanco);
+}
+
+/* Formularios */
+.form-control:focus {
+    border-color: var(--morado);
+    box-shadow: 0 0 0 0.2rem rgba(134, 61, 131, 0.25);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--verde-principal);
+}
+
+/* Badges de estado */
+.badge.bg-success {
+    background-color: var(--morado) !important;
+}
+
+.badge.bg-warning {
+    background-color: var(--naranja) !important;
+}
+
+.badge.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+/* Footer */
+footer {
+    background-color: var(--gris-fondo);
+    border-top: 1px solid #ddd;
+    margin-top: auto;
+}
+
+/* Alertas personalizadas */
+.alert-success {
+    background-color: rgba(134, 61, 131, 0.1);
+    border-color: var(--morado);
+    color: var(--morado);
+}
+
+.alert-danger {
+    background-color: rgba(244, 124, 88, 0.1);
+    border-color: var(--naranja);
+    color: #c0392b;
+}
+
+/* Para que el contenido ocupe toda la altura */
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Estilos para la página de login */
+.login-container {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Links */
+a {
+    color: var(--verde-principal);
+}
+
+a:hover {
+    color: var(--morado);
+}
+
+/* Paginación si la llego a usar */
+.page-link {
+    color: var(--verde-principal);
+}
+
+.page-item.active .page-link {
+    background-color: var(--verde-principal);
+    border-color: var(--verde-principal);
+}
+
+/* Responsive - algunas cosas que tuve que ajustar para móvil */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.4rem;
+    }
+    
+    .card {
+        margin-bottom: 15px;
+    }
+    
+    /* Las tablas se ven mejor con scroll horizontal */
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+}

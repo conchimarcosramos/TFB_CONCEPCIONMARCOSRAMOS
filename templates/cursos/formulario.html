@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Editar' if curso else 'Nuevo' }} Curso{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-6">
+            <i class="fas fa-book"></i> {{ 'Editar' if curso else 'Nuevo' }} Curso
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard.mostrar') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('cursos.listar') }}">Cursos</a></li>
+                <li class="breadcrumb-item active">{{ 'Editar' if curso else 'Nuevo' }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="codigo_curso" class="form-label">Código del Curso *</label>
+                        <input type="text" class="form-control" id="codigo_curso" name="codigo_curso" 
+                               value="{{ curso.codigo_curso if curso }}" required
+                               placeholder="Ej: IFCD084PO">
+                        <small class="text-muted">Código oficial del curso (SEPE, etc.)</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="nombre_curso" class="form-label">Nombre del Curso *</label>
+                        <input type="text" class="form-control" id="nombre_curso" name="nombre_curso" 
+                               value="{{ curso.nombre_curso if curso }}" required
+                               placeholder="Ej: Hacking Ético y Ciberseguridad">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="horas_curso" class="form-label">Horas Totales *</label>
+                        <input type="number" class="form-control" id="horas_curso" name="horas_curso" 
+                               value="{{ curso.horas_curso if curso }}" required min="1"
+                               placeholder="Ej: 60">
+                        <small class="text-muted">Duración total del curso en horas</small>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('cursos.listar') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> {{ 'Actualizar' if curso else 'Crear' }} Curso
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-lightbulb"></i> Ejemplos de cursos</h5>
+                <ul class="small">
+                    <li><strong>IFCD084PO</strong> - Hacking Ético y Ciberseguridad (60h)</li>
+                    <li><strong>IFCD052PO</strong> - Programación en Java (210h)</li>
+                    <li><strong>COMT115PO</strong> - E-Business (60h)</li>
+                    <li><strong>IFCT049PO</strong> - Virtualización con VMware (170h)</li>
+                </ul>
+                <hr>
+                <p class="small mb-0">
+                    <i class="fas fa-info-circle"></i> El código debe ser único en el sistema.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

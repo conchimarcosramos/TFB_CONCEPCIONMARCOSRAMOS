@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Calificaciones - {{ asignacion.codigo_grupo }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="display-6">
+            <i class="fas fa-graduation-cap"></i> Calificaciones
+        </h1>
+        <p class="text-muted">{{ asignacion.codigo_grupo }} - {{ asignacion.curso.nombre_curso }}</p>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard.mostrar') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('asignaciones.listar') }}">Asignaciones</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('asignaciones.ver', id=asignacion.id_asignacion) }}">{{ asignacion.codigo_grupo }}</a></li>
+                <li class="breadcrumb-item active">Calificaciones</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('calificaciones.importar', id_asignacion=asignacion.id_asignacion) }}" 
+           class="btn btn-success btn-lg">
+            <i class="fas fa-file-import"></i> Importar desde Moodle
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                {% if estudiantes %}
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Estudiante</th>
+                                <th>Estado</th>
+                                <th>Nº Calificaciones</th>
+                                <th>Última Nota</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for estudiante in estudiantes %}
+                            <tr>
+                                <td><strong>{{ estudiante.nombre_alumno }}</strong></td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if estudiante.estado_alumno == 'activo' else 'info' if estudiante.estado_alumno == 'finalizado' else 'secondary' }}">
+                                        {{ estudiante.estado_alumno }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">{{ estudiante.calificaciones|length }}</span>
+                                </td>
+                                <td>
+                                    {% if estudiante.calificaciones %}
+                                        {% set ultima_calif = estudiante.calificaciones|sort(attribute='fecha_importacion', reverse=True)|first %}
+                                        <span class="badge bg-{{ 'success' if ultima_calif.nota_final >= 5 else 'danger' }}">
+                                            {{ "%.2f"|format(ultima_calif.nota_final) if ultima_calif.nota_final else '-' }}
+                                        </span>
+                                        <br><small class="text-muted">{{ ultima_calif.nombre_prueba }}</small>
+                                    {% else %}
+                                        <span class="text-muted">Sin calificaciones</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('calificaciones.nueva', id_asignacion=asignacion.id_asignacion, id_estudiante=estudiante.id_estudiante) }}" 
+                                       class="btn btn-sm btn-primary" title="Añadir calificación">
+                                        <i class="fas fa-plus"></i> Añadir Nota
+                                    </a>
+                                </td>
+                            </tr>
+                            
+                            <!-- Detalle de calificaciones del estudiante -->
+                            {% if estudiante.calificaciones %}
+                            <tr class="table-light">
+                                <td colspan="5">
+                                    <small class="text-muted">
+                                        <strong>Calificaciones de {{ estudiante.nombre_alumno }}:</strong>
+                                    </small>
+                                    <div class="mt-2">
+                                        <table class="table table-sm mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Prueba</th>
+                                                    <th>Tipo</th>
+                                                    <th>Nota</th>
+                                                    <th>Peso</th>
+                                                    <th>Fecha</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for calif in estudiante.calificaciones %}
+                                                <tr>
+                                                    <td>{{ calif.nombre_prueba }}</td>
+                                                    <td><span class="badge bg-secondary">{{ calif.tipo_prueba or 'N/A' }}</span></td>
+                                                    <td>
+                                                        <span class="badge bg-{{ 'success' if calif.nota_final >= 5 else 'danger' }}">
+                                                            {{ "%.2f"|format(calif.nota_final) if calif.nota_final else '-' }}
+                                                        </span>
+                                                    </td>
+                                                    <td>{{ calif.peso_nota or '-' }}%</td>
+                                                    <td><small>{{ calif.fecha_prueba.strftime('%d/%m/%Y') if calif.fecha_prueba else '-' }}</small></td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-user-graduate fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No hay estudiantes en esta asignación</h4>
+                    <p class="text-muted">Primero debes añadir estudiantes</p>
+                    <a href="{{ url_for('estudiantes.nuevo', id_asignacion=asignacion.id_asignacion) }}" 
+                       class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Añadir Estudiantes
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
