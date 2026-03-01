@@ -1,5 +1,4 @@
 #version: '3.8' no es necesario en versiones recientes de Docker Compose
-
 services:
   db:
     image: postgres:16
@@ -12,9 +11,14 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - "5432:5432"
+      - "5433:5432"
     networks:
       - gesttation_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gesttation -d gesttation"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   backend:
     build: .
@@ -27,7 +31,8 @@ services:
     ports:
       - "3001:3001"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - .:/app
     networks:
