@@ -30,6 +30,19 @@ CREATE TABLE IF NOT EXISTS empresas (
     fecha_alta TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Tabla DOCENTES
+CREATE TABLE IF NOT EXISTS docentes (
+    id_docente SERIAL PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
+    telefono VARCHAR(20),
+    especialidad VARCHAR(255),
+    activo BOOLEAN DEFAULT TRUE,
+    es_admin BOOLEAN DEFAULT FALSE,
+    id_usuario INTEGER UNIQUE REFERENCES usuarios(id_usuario) ON DELETE SET NULL,
+    fecha_alta TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Tabla CURSOS
 CREATE TABLE IF NOT EXISTS cursos (
     id_curso SERIAL PRIMARY KEY,
@@ -143,19 +156,22 @@ CREATE INDEX idx_ingresos_asignacion ON ingresos(id_asignacion);
 
 -- Usuario de prueba (password: gesttation2026)
 -- Hash generado con werkzeug (scrypt)
+-- Lo dejé en texto plano en el comentario para no olvidarme durante el desarrollo
+-- IMPORTANTE: En producción esto se crearía de forma segura
 INSERT INTO usuarios (nombre_usuario, correo_electronico, clave_hash, rol_usuario)
 VALUES ('admin', 'admin@gesttation.local', 
         'scrypt:32768:8:1$0tzg3gjeb2aGPGxV$a9a234fb85b51d2ed50b1498613b72f610ef5fed521312026eca7d571c6d76621d640dc90a735a8f4ee971facb1ec683b092216b623fc04a514c5ca0d7be9faf', 
         'docente')
 ON CONFLICT (nombre_usuario) DO NOTHING;
 
--- Datos de ejemplo
+-- Datos de ejemplo, NIF inventados pero con el formato correcto
 INSERT INTO empresas (nombre_fiscal, nombre_comercial, nif_cif, tarifa_hora, forma_pago, plazo_pago)
 VALUES 
     ('Centro Formativo Andorra SL', 'CFA', 'A12345678', 25.00, 'Transferencia', 30),
     ('Academia Online Virtual', 'AOV', 'B87654321', 22.50, 'Transferencia', 15)
 ON CONFLICT (nif_cif) DO NOTHING;
 
+-- Cursos reales que he impartido en algunas ocasiones del catálogo de SEPE
 INSERT INTO cursos (codigo_curso, nombre_curso, horas_curso)
 VALUES 
     ('IFCD084PO', 'Hacking Ético y Ciberseguridad', 60),

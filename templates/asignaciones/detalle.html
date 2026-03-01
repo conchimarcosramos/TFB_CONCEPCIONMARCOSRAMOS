@@ -136,4 +136,46 @@
                 
                 <h6><i class="fas fa-laptop"></i> Acceso a Plataforma</h6>
                 <dl class="row">
-                    {% if asignacion.ur
+                    {% if asignacion.url_plataforma %}
+                    <dt class="col-sm-5">URL:</dt>
+                    <dd class="col-sm-7">
+                        <a href="{{ asignacion.url_plataforma }}" target="_blank">
+                            {{ asignacion.url_plataforma }}
+                        </a>
+                    </dd>
+                    {% endif %}
+                    
+                    {% if asignacion.usuario_plataforma %}
+                    <dt class="col-sm-5">Usuario:</dt>
+                    <dd class="col-sm-7">{{ asignacion.usuario_plataforma }}</dd>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones rápidas -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-bolt"></i> Acciones Rápidas</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="{{ url_for('estudiantes.listar', id_asignacion=asignacion.id_asignacion) }}" class="btn btn-outline-primary">
+                        <i class="fas fa-users"></i> Gestionar Estudiantes
+                    </a>
+                    <a href="{{ url_for('calificaciones.listar', id_asignacion=asignacion.id_asignacion) }}" class="btn btn-outline-success">
+                        <i class="fas fa-graduation-cap"></i> Ver Calificaciones
+                    </a>
+                    <a href="{{ url_for('asistencia.listar_asistencia', id_asignacion=asignacion.id_asignacion) }}" class="btn btn-outline-info">
+                        <i class="fas fa-clipboard-check"></i> Control Asistencia
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -28,7 +28,19 @@
                     <h5 class="mb-3"><i class="fas fa-info-circle"></i> Datos Principales</h5>
                     
                     <div class="row mb-3">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="id_docente" class="form-label">Docente *</label>
+                            <select class="form-select" id="id_docente" name="id_docente" required>
+                                <option value="">Selecciona un docente...</option>
+                                {% for doc in docentes %}
+                                <option value="{{ doc.id_usuario }}" 
+                                        {{ 'selected' if asignacion and asignacion.id_usuario == doc.id_usuario else ('selected' if not asignacion and doc.id_usuario == session.usuario_id) }}>
+                                    {{ doc.nombre }}{% if doc.especialidad %} ({{ doc.especialidad }}){% endif %}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
                             <label for="id_empresa" class="form-label">Empresa *</label>
                             <select class="form-select" id="id_empresa" name="id_empresa" required>
                                 <option value="">Selecciona una empresa...</option>
@@ -40,7 +52,7 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label for="id_curso" class="form-label">Curso *</label>
                             <select class="form-select" id="id_curso" name="id_curso" required>
                                 <option value="">Selecciona un curso...</option>

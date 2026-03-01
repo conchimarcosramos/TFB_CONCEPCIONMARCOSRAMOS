@@ -19,6 +19,7 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 3001))
     
     # Debug en True solo para desarrollo - IMPORTANTE cambiarlo en producción
+    # En producción usar Gunicorn y debug=False para mayor seguridad y rendimiento
     app.run(
         host='0.0.0.0',  # Necesario para que Docker lo exponga correctamente
         port=port,

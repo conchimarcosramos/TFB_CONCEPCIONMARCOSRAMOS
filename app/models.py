@@ -38,6 +38,27 @@ class Usuario(db.Model):
         return f'<Usuario {self.nombre_usuario}>'
 
 
+class Docente(db.Model):
+    """Perfil de docente vinculado a un usuario del sistema"""
+    __tablename__ = 'docentes'
+    
+    id_docente = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(255), nullable=False)
+    email = db.Column(db.String(255))
+    telefono = db.Column(db.String(20))
+    especialidad = db.Column(db.String(255))
+    activo = db.Column(db.Boolean, default=True)
+    es_admin = db.Column(db.Boolean, default=False)
+    id_usuario = db.Column(db.Integer, db.ForeignKey('usuarios.id_usuario'), unique=True)
+    fecha_alta = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relación con Usuario
+    usuario = db.relationship('Usuario', backref=db.backref('docente', uselist=False))
+    
+    def __repr__(self):
+        return f'<Docente {self.nombre}>'
+
+
 class Empresa(db.Model):
     __tablename__ = 'empresas'
     

@@ -1,24 +1,27 @@
-#version: '3.8' no es necesario en versiones recientes de Docker Compose
+# docker-compose.yml para GESTTATION
+# He quitado la versión porque en Docker Compose v2 ya no hace falta
+# y así evito warnings innecesarios
+
 services:
   db:
-    image: postgres:16
+    image: postgres:16  # Uso la 16 porque es la LTS más reciente
     container_name: gesttation_db
     environment:
       POSTGRES_DB: gesttation
       POSTGRES_USER: gesttation
-      POSTGRES_PASSWORD: gesttation2026
+      POSTGRES_PASSWORD: gesttation2026  # TODO: Cambiar en producción
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - "5433:5432"
+      - "5433:5432"  # Uso 5433 por si tengo PostgreSQL local en 5432
     networks:
       - gesttation_network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U gesttation -d gesttation"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 10  # He subido los reintentos porque a veces tarda en arrancar
 
   backend:
     build: .
@@ -29,12 +32,12 @@ services:
       FLASK_ENV: development
       SECRET_KEY: dev-secret-key-change-in-production
     ports:
-      - "3001:3001"
+      - "3001:3001"  # Puerto 3001 para no chocar con otros proyectos
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_healthy  # Espero a que la BD esté lista
     volumes:
-      - .:/app
+      - .:/app  # Monto el código para desarrollo en caliente
     networks:
       - gesttation_network
     command: python run.py

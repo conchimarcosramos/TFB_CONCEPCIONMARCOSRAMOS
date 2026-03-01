@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Editar' if docente else 'Nuevo' }} Docente{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-6">
+            <i class="fas fa-chalkboard-teacher"></i> {{ 'Editar' if docente else 'Nuevo' }} Docente
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard.mostrar') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('docentes.listar') }}">Docentes</a></li>
+                <li class="breadcrumb-item active">{{ 'Editar' if docente else 'Nuevo' }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    <!-- Datos personales -->
+                    <h5 class="mb-3"><i class="fas fa-user"></i> Datos Personales</h5>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="nombre" class="form-label">Nombre Completo *</label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" 
+                                   value="{{ docente.nombre if docente }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="especialidad" class="form-label">Especialidad</label>
+                            <input type="text" class="form-control" id="especialidad" name="especialidad" 
+                                   value="{{ docente.especialidad if docente }}"
+                                   placeholder="Ej: Informática, Idiomas, Marketing">
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Datos de contacto -->
+                    <h5 class="mb-3"><i class="fas fa-address-book"></i> Datos de Contacto</h5>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   value="{{ docente.email if docente }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="telefono" class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="telefono" name="telefono" 
+                                   value="{{ docente.telefono if docente }}">
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Usuario y estado -->
+                    <h5 class="mb-3"><i class="fas fa-cog"></i> Configuración</h5>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="id_usuario" class="form-label">Usuario del Sistema</label>
+                            <select class="form-select" id="id_usuario" name="id_usuario">
+                                <option value="">-- Sin usuario asociado --</option>
+                                {% for usuario in usuarios %}
+                                <option value="{{ usuario.id_usuario }}" 
+                                        {% if docente and docente.id_usuario == usuario.id_usuario %}selected{% endif %}>
+                                    {{ usuario.nombre_usuario }} ({{ usuario.correo_electronico }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">Vincular al docente con una cuenta de usuario</small>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label d-block">Estado</label>
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input" type="checkbox" id="activo" name="activo"
+                                       {% if not docente or docente.activo %}checked{% endif %}>
+                                <label class="form-check-label" for="activo">Docente activo</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label d-block">Rol</label>
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input" type="checkbox" id="es_admin" name="es_admin"
+                                       {% if docente and docente.es_admin %}checked{% endif %}>
+                                <label class="form-check-label" for="es_admin">Administrador</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Botones -->
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> {{ 'Actualizar' if docente else 'Crear' }} Docente
+                        </button>
+                        <a href="{{ url_for('docentes.listar') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Panel lateral con información -->
+    <div class="col-lg-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h6><i class="fas fa-info-circle"></i> Información</h6>
+                <p class="small text-muted">
+                    Los docentes son los profesionales que imparten los cursos. 
+                    Cada docente puede estar vinculado a un usuario del sistema 
+                    para acceder a sus asignaciones.
+                </p>
+                <hr>
+                <h6><i class="fas fa-lightbulb"></i> Consejos</h6>
+                <ul class="small text-muted mb-0">
+                    <li>El nombre completo se mostrará en informes</li>
+                    <li>La especialidad ayuda a asignar cursos adecuados</li>
+                    <li>Vincular un usuario permite al docente acceder al sistema</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

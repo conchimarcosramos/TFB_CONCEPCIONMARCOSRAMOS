@@ -3,11 +3,6 @@ Inicialización de la aplicación Flask
 GESTTATION - Gestor Integral de Cursos para Docentes
 TFB 2025-2026 - Universitat Carlemany
 """
-"""
-Inicialización de la aplicación Flask
-GESTTATION - Gestor Integral de Cursos para Docentes
-TFB 2025-2026 - Universitat Carlemany
-"""
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -46,3 +41,7 @@ def create_app():
         db.create_all()
 
     return app
+
+# TODO: En futuras versiones, mover la lógica de blueprints a un archivo separado
+# OPCION DE PROBAR ALEMBIC EN PRODUCCION
+

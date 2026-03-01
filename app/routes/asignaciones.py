@@ -10,7 +10,7 @@ diferentes grupos, diferentes fechas).
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from app import db
-from app.models import AsignacionCurso, Empresa, Curso, Estudiante
+from app.models import AsignacionCurso, Empresa, Curso, Estudiante, Docente
 from app.routes.auth import login_requerido
 from datetime import datetime
 
@@ -19,13 +19,21 @@ bp = Blueprint('asignaciones', __name__, url_prefix='/asignaciones')
 @bp.route('/')
 @login_requerido
 def listar():
-    """Lista todas las asignaciones del docente"""
+    """Lista todas las asignaciones del docente (o todas si es admin)"""
     usuario_id = session.get('usuario_id')
+    
+    # Verificar si es admin
+    docente_actual = Docente.query.filter_by(id_usuario=usuario_id).first()
+    es_admin = docente_actual and docente_actual.es_admin
     
     # Filtro por estado si viene en la query string
     estado = request.args.get('estado', 'todas')
     
-    query = AsignacionCurso.query.filter_by(id_usuario=usuario_id)
+    # Si es admin, puede ver todas las asignaciones
+    if es_admin:
+        query = AsignacionCurso.query
+    else:
+        query = AsignacionCurso.query.filter_by(id_usuario=usuario_id)
     
     if estado != 'todas':
         query = query.filter_by(estado_asignacion=estado)
@@ -42,13 +50,24 @@ def listar():
 def nueva():
     """Crear nueva asignación"""
     
+    # Obtener el docente del usuario logueado
+    id_usuario = session.get('usuario_id')
+    docente = Docente.query.filter_by(id_usuario=id_usuario).first()
+    
+    if not docente:
+        flash('Error: No tienes un perfil de docente asociado', 'danger')
+        return redirect(url_for('dashboard.mostrar'))
+    
     if request.method == 'POST':
         # Convierto las fechas de string a date
         fecha_inicio_str = request.form.get('fecha_inicio')
         fecha_fin_str = request.form.get('fecha_fin')
         
+        # Usar el docente seleccionado del formulario
+        id_docente_seleccionado = request.form.get('id_docente')
+        
         asignacion = AsignacionCurso(
-            id_usuario=session.get('usuario_id'),
+            id_usuario=id_docente_seleccionado,
             id_empresa=request.form.get('id_empresa'),
             id_curso=request.form.get('id_curso'),
             url_plataforma=request.form.get('url_plataforma'),
@@ -73,14 +92,16 @@ def nueva():
             db.session.rollback()
             flash(f'Error al crear la asignación: {str(e)}', 'error')
     
-    # Cargo empresas y cursos para los selectores
+    # Cargo empresas, cursos y docentes para los selectores
     empresas = Empresa.query.order_by(Empresa.nombre_comercial).all()
     cursos = Curso.query.order_by(Curso.codigo_curso).all()
+    docentes = Docente.query.filter_by(activo=True).filter(Docente.id_usuario.isnot(None)).order_by(Docente.nombre).all()
     
     return render_template('asignaciones/formulario.html', 
                          asignacion=None,
                          empresas=empresas,
-                         cursos=cursos)
+                         cursos=cursos,
+                         docentes=docentes)
 
 
 @bp.route('/editar/<int:id>', methods=['GET', 'POST'])
@@ -90,8 +111,12 @@ def editar(id):
     
     asignacion = AsignacionCurso.query.get_or_404(id)
     
-    # Verifico que la asignación sea del docente actual
-    if asignacion.id_usuario != session.get('usuario_id'):
+    # Verifico que la asignación sea del docente actual o que sea admin
+    id_usuario = session.get('usuario_id')
+    docente_actual = Docente.query.filter_by(id_usuario=id_usuario).first()
+    es_admin = docente_actual and docente_actual.es_admin
+    
+    if asignacion.id_usuario != id_usuario and not es_admin:
         flash('No tienes permisos para editar esta asignación', 'error')
         return redirect(url_for('asignaciones.listar'))
     
@@ -99,6 +124,7 @@ def editar(id):
         fecha_inicio_str = request.form.get('fecha_inicio')
         fecha_fin_str = request.form.get('fecha_fin')
         
+        asignacion.id_usuario = request.form.get('id_docente')
         asignacion.id_empresa = request.form.get('id_empresa')
         asignacion.id_curso = request.form.get('id_curso')
         asignacion.url_plataforma = request.form.get('url_plataforma')
@@ -123,11 +149,13 @@ def editar(id):
     
     empresas = Empresa.query.order_by(Empresa.nombre_comercial).all()
     cursos = Curso.query.order_by(Curso.codigo_curso).all()
+    docentes = Docente.query.filter_by(activo=True).filter(Docente.id_usuario.isnot(None)).order_by(Docente.nombre).all()
     
     return render_template('asignaciones/formulario.html',
                          asignacion=asignacion,
                          empresas=empresas,
-                         cursos=cursos)
+                         cursos=cursos,
+                         docentes=docentes)
 
 
 @bp.route('/ver/<int:id>')
@@ -137,8 +165,12 @@ def ver(id):
     
     asignacion = AsignacionCurso.query.get_or_404(id)
     
-    # Verifico permisos
-    if asignacion.id_usuario != session.get('usuario_id'):
+    # Verifico permisos (admin puede ver todas)
+    id_usuario = session.get('usuario_id')
+    docente_actual = Docente.query.filter_by(id_usuario=id_usuario).first()
+    es_admin = docente_actual and docente_actual.es_admin
+    
+    if asignacion.id_usuario != id_usuario and not es_admin:
         flash('No tienes permisos para ver esta asignación', 'error')
         return redirect(url_for('asignaciones.listar'))
     
@@ -161,7 +193,12 @@ def eliminar(id):
     
     asignacion = AsignacionCurso.query.get_or_404(id)
     
-    if asignacion.id_usuario != session.get('usuario_id'):
+    # Verifico permisos (admin puede eliminar cualquiera)
+    id_usuario = session.get('usuario_id')
+    docente_actual = Docente.query.filter_by(id_usuario=id_usuario).first()
+    es_admin = docente_actual and docente_actual.es_admin
+    
+    if asignacion.id_usuario != id_usuario and not es_admin:
         flash('No tienes permisos para eliminar esta asignación', 'error')
         return redirect(url_for('asignaciones.listar'))
     

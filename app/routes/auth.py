@@ -7,7 +7,6 @@ me pareció más sencillo y no necesito API stateless por ahora.
 """
 
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-import bcrypt
 from app.models import Usuario
 
 auth_bp = Blueprint('auth', __name__)
@@ -53,6 +52,7 @@ def login_requerido(f):
     Decorador para proteger rutas que requieren autenticación.
     Lo uso en lugar de Flask-Login porque me pareció innecesario
     añadir otra dependencia para un solo usuario.
+    Si en el futuro amplio a multi-usuario podría migrar a Flask-Login sin mucho esfuerzo.
     """
     from functools import wraps
     

@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Docente: {{ docente.nombre }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="display-6">
+            <i class="fas fa-chalkboard-teacher"></i> {{ docente.nombre }}
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard.mostrar') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('docentes.listar') }}">Docentes</a></li>
+                <li class="breadcrumb-item active">{{ docente.nombre }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('docentes.editar', id=docente.id_docente) }}" class="btn btn-warning">
+            <i class="fas fa-edit"></i> Editar
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Información del docente -->
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-user"></i> Datos del Docente</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless mb-0">
+                    <tr>
+                        <th width="40%">Nombre:</th>
+                        <td>{{ docente.nombre }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email:</th>
+                        <td>
+                            {% if docente.email %}
+                            <a href="mailto:{{ docente.email }}">{{ docente.email }}</a>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Teléfono:</th>
+                        <td>{{ docente.telefono or '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Especialidad:</th>
+                        <td>{{ docente.especialidad or '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Estado:</th>
+                        <td>
+                            {% if docente.activo %}
+                            <span class="badge bg-success">Activo</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inactivo</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Usuario:</th>
+                        <td>
+                            {% if docente.usuario %}
+                            <span class="badge bg-info">{{ docente.usuario.nombre_usuario }}</span>
+                            {% else %}
+                            <span class="text-muted">Sin usuario</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Alta:</th>
+                        <td>{{ docente.fecha_alta.strftime('%d/%m/%Y') if docente.fecha_alta else '-' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Panel principal -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-calendar-alt"></i> Asignaciones</h5>
+            </div>
+            <div class="card-body">
+                {% if docente.usuario and docente.usuario.asignaciones %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Curso</th>
+                                <th>Empresa</th>
+                                <th>Grupo</th>
+                                <th>Fechas</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for asignacion in docente.usuario.asignaciones %}
+                            <tr>
+                                <td>
+                                    <strong>{{ asignacion.curso.codigo_curso }}</strong><br>
+                                    <small class="text-muted">{{ asignacion.curso.nombre_curso }}</small>
+                                </td>
+                                <td>{{ asignacion.empresa.nombre_comercial or asignacion.empresa.nombre_fiscal }}</td>
+                                <td>{{ asignacion.codigo_grupo or '-' }}</td>
+                                <td>
+                                    {{ asignacion.fecha_inicio.strftime('%d/%m/%Y') if asignacion.fecha_inicio else '-' }}
+                                    {% if asignacion.fecha_fin %}
+                                    - {{ asignacion.fecha_fin.strftime('%d/%m/%Y') }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if asignacion.estado_asignacion == 'activa' %}
+                                    <span class="badge bg-success">Activa</span>
+                                    {% elif asignacion.estado_asignacion == 'finalizada' %}
+                                    <span class="badge bg-secondary">Finalizada</span>
+                                    {% else %}
+                                    <span class="badge bg-warning">{{ asignacion.estado_asignacion }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Este docente no tiene asignaciones</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

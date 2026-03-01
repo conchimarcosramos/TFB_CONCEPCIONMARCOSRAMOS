@@ -27,8 +27,8 @@
     <!-- Navbar - Solo se muestra si hay sesión activa -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url_for('dashboard.mostrar') }}">
-                <i class="fas fa-chalkboard-teacher"></i> GESTTATION
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('dashboard.mostrar') }}">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="GESTTATION" height="48">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -53,6 +53,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('cursos.listar') }}">
                             <i class="fas fa-book"></i> Cursos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('docentes.listar') }}">
+                            <i class="fas fa-chalkboard-teacher"></i> Docentes
                         </a>
                     </li>
                 </ul>
